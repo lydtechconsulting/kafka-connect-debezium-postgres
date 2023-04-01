@@ -1,8 +1,6 @@
 # Kafka Connect: Debezium, Postgres and Spring Boot Demo
 
-Spring Boot application demonstrating the using Debezium (Kafka Connect) for Change Data Capture (CDC) to publish outbound events.
-
-TODO....
+Spring Boot application demonstrating the using Debezium (Kafka Connect) for Change Data Capture (CDC) to publish outbound events to Kafka from Postgres.
 
 ## Running The Demo
 
