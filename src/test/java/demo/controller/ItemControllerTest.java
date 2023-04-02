@@ -1,5 +1,8 @@
 package demo.controller;
 
+import java.net.URI;
+import java.util.UUID;
+
 import demo.rest.api.CreateItemRequest;
 import demo.service.ItemService;
 import demo.util.TestRestData;
@@ -16,6 +19,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ItemControllerTest {
 
@@ -32,10 +36,13 @@ public class ItemControllerTest {
      * Ensure that the REST request is successfully passed on to the service.
      */
     @Test
-    public void testCreateItem_Success() {
+    public void testCreateItem_Success() throws Exception {
+        UUID itemId = randomUUID();
         CreateItemRequest request = TestRestData.buildCreateItemRequest(RandomStringUtils.randomAlphabetic(8));
+        when(serviceMock.process(request)).thenReturn(itemId);
         ResponseEntity response = controller.createItem(request);
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertThat(response.getHeaders().getLocation(), equalTo(URI.create(itemId.toString())));
         verify(serviceMock, times(1)).process(request);
     }
 
@@ -45,7 +52,7 @@ public class ItemControllerTest {
      * This ensures the consumer offsets are updated so that the message is not redelivered.
      */
     @Test
-    public void testCreateItem_ServiceThrowsException() {
+    public void testCreateItem_ServiceThrowsException() throws Exception {
         CreateItemRequest request = TestRestData.buildCreateItemRequest(RandomStringUtils.randomAlphabetic(8));
         doThrow(new RuntimeException("Service failure")).when(serviceMock).process(request);
         ResponseEntity response = controller.createItem(request);

@@ -2,12 +2,12 @@ package demo.service;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import demo.domain.Item;
 import demo.domain.Outbox;
 import demo.repository.ItemRepository;
 import demo.repository.OutboxRepository;
 import demo.rest.api.CreateItemRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,34 +18,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ItemService {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     private final ItemRepository itemRepository;
 
-    private final OutboxRepository outboxEventRepository;
+    private final OutboxRepository outboxRepository;
 
-    private final String outboxDestination;
+    private final String itemOutboxDestination;
 
     public ItemService(@Autowired ItemRepository itemRepository,
-                       @Autowired OutboxRepository outboxEventRepository,
-                       @Value("${demo.outboxDestination}") String outboxDestination) {
+                       @Autowired OutboxRepository outboxRepository,
+                       @Value("${demo.outbox.item.destination}") String itemOutboxDestination) {
         this.itemRepository = itemRepository;
-        this.outboxEventRepository = outboxEventRepository;
-        this.outboxDestination = outboxDestination;
+        this.outboxRepository = outboxRepository;
+        this.itemOutboxDestination = itemOutboxDestination;
     }
 
     @Transactional
-    public UUID process(CreateItemRequest request) {
+    public UUID process(CreateItemRequest request) throws Exception {
         Item item = Item.builder()
                 .name(request.getName())
                 .build();
-        UUID itemId = itemRepository.save(item).getId();
+        item = itemRepository.save(item);
+        String outboxPayload = objectMapper.writeValueAsString(item);
         Outbox outboxEvent = Outbox.builder()
                 .version("v1")
-                .payload(request.getName())
-                .destination(outboxDestination)
+                .payload(outboxPayload)
+                .destination(itemOutboxDestination)
                 .timestamp(System.currentTimeMillis())
                 .build();
-        UUID outboxId = outboxEventRepository.save(outboxEvent).getId();
-        log.info("Item created with id " + itemId + " - and Outbox event created with Id: {}", outboxId);
-        return itemId;
+        UUID outboxId = outboxRepository.save(outboxEvent).getId();
+        log.info("Item created with id " + item.getId() + " - and Outbox entity created with Id: {}", outboxId);
+        return item.getId();
     }
 }

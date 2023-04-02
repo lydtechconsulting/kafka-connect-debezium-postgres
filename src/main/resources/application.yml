@@ -3,14 +3,14 @@ spring:
         name: demo
     datasource:
         driverClassName: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/postgres?currentSchema=kafka_connect_demo_debezium_postgres
+        url: jdbc:postgresql://localhost:5432/postgres?currentSchema=debezium_postgres_demo
         username: postgres
         password: postgres
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         properties:
             hibernate:
-                default_schema: kafka_connect_demo_debezium_postgres
+                default_schema: debezium_postgres_demo
         hibernate:
             ddl-auto: validate
         generate-ddl: false
@@ -18,10 +18,12 @@ spring:
         rest:
             detection-strategy: annotated
     flyway:
-        schemas: kafka_connect_demo_debezium_postgres
+        schemas: debezium_postgres_demo
 
 server:
     port: 9001
 
 demo:
-    outboxDestination: "kafka_connect_demo_debezium_postgres.outbox"
+    outbox:
+        item:
+            destination: "item"

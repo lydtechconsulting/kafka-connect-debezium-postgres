@@ -1,9 +1,9 @@
 package demo.controller;
 
+import java.net.URI;
 import java.util.UUID;
 
 import demo.rest.api.CreateItemRequest;
-import demo.rest.api.CreateItemResponse;
 import demo.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +24,11 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<CreateItemResponse> createItem(@RequestBody CreateItemRequest request) {
+    public ResponseEntity<String> createItem(@RequestBody CreateItemRequest request) {
         log.info("Received request to create item with name: " + request.getName());
         try {
             UUID itemId = itemService.process(request);
-            return ResponseEntity.ok(CreateItemResponse.builder().id(itemId).build());
+            return ResponseEntity.created(URI.create(itemId.toString())).build();
         } catch(Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

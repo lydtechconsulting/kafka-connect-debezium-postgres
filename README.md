@@ -36,13 +36,13 @@ curl localhost:8083/connectors
 
 Register connector:
 ```
-curl -X POST localhost:8083/connectors -H "Content-Type: application/json" -d @./connector/kafka-connect-debezium-postgres-source-connector.json
+curl -X POST localhost:8083/connectors -H "Content-Type: application/json" -d @./connector/debezium-postgres-source-connector.json
 ```
 
 List registered connectors:
 ```
 curl localhost:8083/connectors
-["kafka-connect-debezium-postgres-source-connector"]
+["debezium-postgres-source-connector"]
 ```
 
 Start Spring Boot application:
@@ -58,7 +58,7 @@ docker exec -ti kafka bash
 Start console-consumer to listen for outbox event:
 ```
 kafka-console-consumer \
---topic demo.kafka_connect_demo_debezium_postgres.outbox \
+--topic outbox.event.item \
 --bootstrap-server kafka:29092
 ```
 
@@ -67,17 +67,25 @@ In a second terminal window use curl to submit a POST REST request to the applic
 curl -i -X POST localhost:9001/v1/item -H "Content-Type: application/json" -d '{"name": "test-item"}'
 ```
 
-A response should be returned with the 200 status code and the new item id.
+A response should be returned with the 201 CREATED status code and the new item id in the Location header:
 ```
-{"id":"bcc37671-dd1d-497a-90a9-70292b495772"}
+HTTP/1.1 201 
+Location: 3e97d918-85cf-47ce-b58f-e13be187f080
 ```
 
-View outbox event consumed by the console-consumer from Kafka.
+The Spring Boot application should log the successful item and outbox entities persistence:
+```
+Item created with id 3e97d918-85cf-47ce-b58f-e13be187f080 - and Outbox entity created with Id: 687e5def-2c87-4d5b-ade1-27f8b4ed41b1
+```
 
+View outbox event consumed by the console-consumer from Kafka:
+```
+{"schema":{"type":"string","optional":true},"payload":"{\"id\":\"3e97d918-85cf-47ce-b58f-e13be187f080\",\"name\":\"test-item\"}"}
+```
 
 Delete registered connector:
 ```
-curl -i -X DELETE localhost:8083/connectors/kafka-connect-debezium-postgres-source-connector
+curl -i -X DELETE localhost:8083/connectors/debezium-postgres-source-connector
 ```
 
 Stop containers:
@@ -137,7 +145,7 @@ docker rm -f $(docker ps -aq)
 
 ### Create Postgres connector
 
-The Debezium Postgres source connector configuration is defined in `connector/kafka-idempotent-consumer-demo-connector.json`.
+The Debezium Postgres source connector configuration is defined in `connector/debezium-postgres-source-connector.json`.
 
 It includes a Single Message Transform (SMT) that routes the outbox event to the value of the destination field in the 
 outbox event database table.

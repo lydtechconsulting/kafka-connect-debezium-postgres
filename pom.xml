@@ -136,6 +136,7 @@
 								<debezium.enabled>true</debezium.enabled>
 								<debezium.port>8083</debezium.port>
 								<debezium.container.logging.enabled>false</debezium.container.logging.enabled>
+								<kafka.control.center.enabled>false</kafka.control.center.enabled>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>

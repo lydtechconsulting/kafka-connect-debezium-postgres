@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import static java.util.UUID.randomUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -48,16 +47,10 @@ public class EndToEndIntegrationTest {
         CreateItemRequest request = TestRestData.buildCreateItemRequest(RandomStringUtils.randomAlphabetic(8));
 
         ResponseEntity<String> response = restTemplate.postForEntity("/v1/item", request, String.class);
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody(), notNullValue());
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertThat(response.getHeaders().getLocation(), notNullValue());
 
         assertThat(itemRepository.count(), equalTo(1L));
         assertThat(outboxRepository.count(), equalTo(1L));
-
-        // Check item and outbox entities have been written to the database.
-//        Awaitility.await().atMost(3, TimeUnit.SECONDS).pollDelay(100, TimeUnit.MILLISECONDS)
-//                .until(itemRepository::count, equalTo(1L));
-//        Awaitility.await().atMost(1, TimeUnit.SECONDS).pollDelay(100, TimeUnit.MILLISECONDS)
-//                .until(outboxRepository::count, equalTo(1L));
     }
 }

@@ -39,7 +39,7 @@ public class ItemServiceTest {
      * Ensure the item and outbox entities are persisted.
      */
     @Test
-    public void testProcess() {
+    public void testProcess() throws Exception {
         UUID itemId = randomUUID();
         CreateItemRequest request = TestRestData.buildCreateItemRequest(RandomStringUtils.randomAlphabetic(8));
         when(itemRepositoryMock.save(any(Item.class))).thenReturn(TestDomainData.buildItem(itemId, request.getName()));

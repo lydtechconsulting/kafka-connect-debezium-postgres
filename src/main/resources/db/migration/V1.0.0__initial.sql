@@ -1,12 +1,12 @@
-CREATE SCHEMA IF NOT EXISTS kafka_connect_demo_debezium_postgres;
+CREATE SCHEMA IF NOT EXISTS debezium_postgres_demo;
 
-CREATE TABLE kafka_connect_demo_debezium_postgres.item (
+CREATE TABLE debezium_postgres_demo.item (
     id uuid NOT NULL,
     name varchar(4096) NOT NULL,
     CONSTRAINT item_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE kafka_connect_demo_debezium_postgres.outbox (
+CREATE TABLE debezium_postgres_demo.outbox (
                               id uuid NOT NULL,
                               destination varchar(255) NULL,
                               payload varchar(4096) NULL,
