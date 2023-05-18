@@ -1,12 +1,16 @@
 # Kafka Connect: Debezium, Postgres and Spring Boot Demo
 
-Spring Boot application demonstrating the using Debezium (Kafka Connect) for Change Data Capture (CDC) to publish outbound events to Kafka from Postgres.
+Spring Boot application demonstrating the Transactional Outbox pattern using Debezium (Kafka Connect) for Change Data Capture (CDC) to publish outbound events to Kafka from Postgres.
+
+This repo accompanies the following article:
+
+- [Kafka Connect: Transactional Outbox With Debezium: Spring Boot Demo](https://www.lydtechconsulting.com/blog-kafka-connect-debezium-demo.html): demonstrating the Transactional Outbox pattern using Kafka Connect with Debezium for Change Data Capture.
 
 ## Running The Demo
 
 The demo steps are as follows (and detailed below):
-- Start the Docker containers (Kafka, Zookeeper, Postgres, Debezium, Wiremock) via docker-compose.
-- Submit the kafka connect connector definition via curl.
+- Start the Docker containers (Kafka, Zookeeper, Postgres, Debezium) via docker-compose.
+- Submit the Kafka Connect connector definition via curl.
 - Start the Spring Boot demo application.
 - Start a console-consumer to listen on the outbox topic (populated by Debezium).
 - Submit a REST request to the application to create an item
@@ -57,9 +61,7 @@ docker exec -ti kafka bash
 
 Start console-consumer to listen for outbox event:
 ```
-kafka-console-consumer \
---topic outbox.event.item \
---bootstrap-server kafka:29092
+kafka-console-consumer --topic outbox.event.item --bootstrap-server kafka:29092
 ```
 
 In a second terminal window use curl to submit a POST REST request to the application to create an item:
@@ -99,20 +101,11 @@ Build and test with maven and Java 17.
 
 Run integration tests with `mvn clean test`
 
-The tests demonstrate event deduplication with the Idempotent Consumer pattern when duplicate events are consumed by the 
-application.
+The tests demonstrate the application receiving the REST request to create an item, and succesfully creating the Item entity and Outbox entity.
 
 ## Component Tests
 
-The tests demonstrate event deduplication when duplicate events are consumed by the application using the Idempotent
-Consumer pattern, as well publishing events using the Transactional Outbox pattern with Debezium (Kafka Connect) for 
-Change Data Capture.   They use a dockerised Kafka broker, a dockerised Debezium Kafka Connect, a dockerised Postgres 
-database, and a dockerised wiremock to represent a third party service.  
-
-This call to the third party service simulates transient errors that can be successful on retry.  The delay caused by 
-retry can cause duplicate message delivery, enabling demonstration of event deduplication.
-
-Two instances of the service are also running in docker containers.
+The tests demonstrate the application publishing events using the Transactional Outbox pattern using Debezium (Kafka Connect) for Change Data Capture.   They use a dockerised Kafka broker, a dockerised Debezium Kafka Connect, a dockerised Postgres database, and a dockerised instance of the application.
 
 For more on the component tests see: https://github.com/lydtechconsulting/component-test-framework
 
@@ -147,8 +140,7 @@ docker rm -f $(docker ps -aq)
 
 The Debezium Postgres source connector configuration is defined in `connector/debezium-postgres-source-connector.json`.
 
-It includes a Single Message Transform (SMT) that routes the outbox event to the value of the destination field in the 
-outbox event database table.
+It includes a Single Message Transform (SMT) that routes the outbox event to the value of the payload field in the outbox event database table.
 
 The component tests create and delete the connector via the `DebeziumClient` class in the `component-test-framework`.
 
