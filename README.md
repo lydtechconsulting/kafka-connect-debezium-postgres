@@ -2,9 +2,7 @@
 
 Spring Boot application demonstrating the Transactional Outbox pattern using Debezium (Kafka Connect) for Change Data Capture (CDC) to publish outbound events to Kafka from Postgres.
 
-This repo accompanies the following article:
-
-- [Kafka Connect: Transactional Outbox With Debezium: Spring Boot Demo](https://www.lydtechconsulting.com/blog-kafka-connect-debezium-demo.html): demonstrating the Transactional Outbox pattern using Kafka Connect with Debezium for Change Data Capture.
+This repo accompanies the article [Kafka Connect: Transactional Outbox With Debezium: Spring Boot Demo](https://www.lydtechconsulting.com/blog-kafka-connect-debezium-demo.html).
 
 ## Running The Demo
 
