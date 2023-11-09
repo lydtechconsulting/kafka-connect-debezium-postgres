@@ -66,7 +66,7 @@ public class EndToEndCT {
      *
      * An outbound event is emitted using the transactional outbox pattern, with Debezium writing the event to Kafka.
      *
-     * The outbound event should have the new item id and name in its payload (as JSON_.  The item id is also returned
+     * The outbound event should have the new item id and name in its payload (as JSON).  The item id is also returned
      * in the REST request to create the item, so is available for comparison.
      */
     @Test
