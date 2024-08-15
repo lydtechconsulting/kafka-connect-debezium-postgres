@@ -105,6 +105,8 @@ The tests demonstrate the application receiving the REST request to create an it
 
 The tests demonstrate the application publishing events using the Transactional Outbox pattern using Debezium (Kafka Connect) for Change Data Capture.   They use a dockerised Kafka broker, a dockerised Debezium Kafka Connect, a dockerised Postgres database, and a dockerised instance of the application.
 
+To test the application running against the Apache Kafka native instance, set `kafka.enabled` to `false` and `kafka.native.enabled` to `true` in the `pom.xml`.
+
 For more on the component tests see: https://github.com/lydtechconsulting/component-test-framework
 
 Build Spring Boot application jar:

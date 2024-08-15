@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.3.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>demo</groupId>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>dev.lydtech</groupId>
 			<artifactId>component-test-framework</artifactId>
-			<version>2.1.1</version>
+			<version>3.5.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -101,7 +101,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M9</version>
+				<version>3.2.5</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -114,12 +114,13 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.2.5</version>
 						<configuration>
 							<includes>
 								<include>*CT.*</include>
 							</includes>
 							<environmentVariables>
-								<TESTCONTAINERS_RYUK_DISABLED>${containers.stayup}</TESTCONTAINERS_RYUK_DISABLED>
+								<TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
 							</environmentVariables>
 							<systemPropertyVariables>
 								<service.name>${project.name}</service.name>
@@ -132,6 +133,7 @@
 								<postgres.password>postgres</postgres.password>
 								<postgres.container.logging.enabled>false</postgres.container.logging.enabled>
 								<kafka.enabled>true</kafka.enabled>
+								<kafka.native.enabled>false</kafka.native.enabled>
 								<kafka.container.logging.enabled>false</kafka.container.logging.enabled>
 								<debezium.enabled>true</debezium.enabled>
 								<debezium.port>8083</debezium.port>
